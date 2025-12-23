@@ -3,14 +3,15 @@ import { useState } from 'react';
 import { encryptData, decryptData } from '../lib/crypto';
 
 export default function Home() {
-  const [mode, setMode] = useState('encrypt');
+  const [mode, setMode] = useState<'encrypt' | 'decrypt'>('encrypt');
   const [text, setText] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
-  const [isMasked, setIsMasked] = useState(false); // DEFAULT: Show text
+  const [isMasked, setIsMasked] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleSubmit = async (e) => {
+  // Added React.FormEvent type here
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text || !password) return;
     try {
@@ -32,10 +33,8 @@ export default function Home() {
 
   return (
     <main className="selection:bg-zinc-800">
-      {/* Outer wrapper controls symmetry and mobile stacking */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-14 py-12 px-6">
         
-        {/* Nav Section: Stays narrow */}
         <div className="flex flex-row md:flex-col gap-6 md:gap-0 items-center md:items-start w-auto">
           <h1 
             className={`cursor-pointer text-3xl md:text-4xl font-bold tracking-tighter transition-all duration-300 ${mode === 'encrypt' ? 'text-white' : 'text-zinc-800 hover:text-zinc-700'}`}
@@ -51,24 +50,23 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Form Area: Locked at 240px for that classic symmetrical look */}
         <div className="w-[240px] flex flex-col gap-6">
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <input
               type="text"
               placeholder={mode === 'encrypt' ? "text" : "hash"}
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
               autoComplete="off"
               className="bg-transparent border-b border-zinc-800 outline-none py-1 text-sm font-light focus:border-zinc-500 transition-colors placeholder:text-zinc-800"
             />
             
             <div className="relative">
               <input
-                type="text" // Always text to block password managers
+                type="text"
                 placeholder="key"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 autoComplete="off"
                 spellCheck="false"
                 className={`w-full bg-transparent border-b border-zinc-800 outline-none py-1 text-sm font-light focus:border-zinc-500 transition-colors placeholder:text-zinc-800 ${isMasked ? 'mask-key' : ''}`}
@@ -90,7 +88,6 @@ export default function Home() {
             </button>
           </form>
 
-          {/* Dotted Result Box */}
           {result && (
             <div className="relative p-4 border border-dashed border-zinc-800 bg-zinc-950/20 rounded-sm animate-in fade-in slide-in-from-top-1">
               <div className="flex justify-between items-start mb-3">
@@ -102,7 +99,7 @@ export default function Home() {
                   className="mt-[-2px] mr-[-2px] p-1 transition-all active:scale-75"
                 >
                     {copied ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="animate-in zoom-in"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     ) : (
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hover:stroke-white transition-colors"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                     )}
@@ -115,8 +112,6 @@ export default function Home() {
           )}
         </div>
       </div>
-
-      {/* The Animated Rainbow Line */}
       <div className="fixed bottom-0 left-0 w-full h-[1px] animate-rainbow"></div>
     </main>
   );
